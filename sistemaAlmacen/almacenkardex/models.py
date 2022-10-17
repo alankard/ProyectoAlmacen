@@ -46,9 +46,8 @@ class Precio_ventas(models.Model):
        return str(self.preciov) + " " + str(self.producto)
 
 class Caracteristicas_Producto(models.Model):
-    preciov = models.ForeignKey(Precio_ventas, on_delete=models.CASCADE)
     producto = models.ForeignKey(Productos, on_delete=models.CASCADE)
-    unidad_de_medida = models.ForeignKey(Unidad_de_Medidas, on_delete=models.CASCADE)
+    caracteristica = models.CharField(default='',max_length=50)
 
     def __str__(self):
        return self.producto.producto
@@ -57,7 +56,7 @@ class Caracteristicas_Producto(models.Model):
 class Compra(models.Model):
     comprobante=models.CharField(max_length=20)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
-    cantidadt = models.DecimalField(max_digits=12,decimal_places=2)
+    preciot = models.DecimalField(default=0,max_digits=12,decimal_places=2)
 
     def __str__(self):
         return self.comprobante + " " + str(self.proveedor)
@@ -72,6 +71,7 @@ class Precio_Proveedor(models.Model):
 class Compra_Detalle(models.Model):
     compra= models.ForeignKey(Compra, on_delete=models.CASCADE)
     producto_proveedor = models.ForeignKey(Producto_Proveedor, on_delete=models.CASCADE)
+    cantidadt= models.DecimalField(default=0,max_digits=12,decimal_places=2)
     precio_unitario = models.DecimalField(max_digits=12,decimal_places=2) 
     preciop = models.ForeignKey(Precio_Proveedor, on_delete=models.CASCADE)
     subtotal= models.DecimalField(max_digits=12,decimal_places=2)
@@ -79,6 +79,13 @@ class Compra_Detalle(models.Model):
     def __str__(self):
        return str(self.producto_proveedor) + " - " + str(self.subtotal)
 
+class Inventariador(models.Model):
+    codigo_trabajador = models.CharField(max_length=10)
+    nombres = models.CharField(max_length=50)
+    apellidos = models.CharField(max_length=50)
+
+    def __str__(self):
+       return str(self.nombres) + "  " + str(self.apellidos)
 
 class Inventario(models.Model):
     fecha_horas = models.DateTimeField(auto_now_add=True)
@@ -86,15 +93,8 @@ class Inventario(models.Model):
     movimiento = models.CharField(max_length=1)
     compra_detalle = models.ForeignKey(Compra_Detalle, on_delete=models.CASCADE)
     stock = models.DecimalField(max_digits=12,decimal_places=2)
+    inventariador = models.ForeignKey(Inventariador, on_delete=models.CASCADE,blank=True)
 
     def __str__(self):
        return str(self.producto) + " - " + str(self.movimiento)
 
-class Invetariador(models.Model):
-    codigo_trabajador = models.CharField(max_length=10)
-    nombres = models.CharField(max_length=50)
-    apellidos = models.CharField(max_length=50)
-    inventario = models.ForeignKey(Inventario, on_delete=models.CASCADE)
-
-    def __str__(self):
-       return str(self.nombres) + "  " + str(self.apellidos)
